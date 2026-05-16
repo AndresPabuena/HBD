@@ -118,6 +118,33 @@ a {
 }
 
 /* =========================================================
+   AUDIO FALLBACK button (only visible if autoplay was blocked)
+   ========================================================= */
+#audio-fallback {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10000;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #ff4d6d, #ff8fa3);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(255, 77, 109, 0.5);
+  align-items: center;
+  gap: 8px;
+  animation: pulse 1.8s ease-in-out infinite;
+  -webkit-tap-highlight-color: transparent;
+}
+#audio-fallback:active {
+  transform: scale(0.95);
+}
+
+/* =========================================================
    SPLASH "Toca para comenzar"
    ========================================================= */
 #splash {

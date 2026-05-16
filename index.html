@@ -32,8 +32,35 @@
     <script>
       function playAudio() {
         var audio = document.getElementById("myAudio");
+        if (!audio) return;
+        audio.muted = false;
+        audio.volume = 1;
+        try {
+          var p = audio.play();
+          if (p && typeof p.catch === 'function') {
+            p.catch(function () {
+              // Autoplay blocked — show fallback button so the user can retry.
+              var btn = document.getElementById("audio-fallback");
+              if (btn) btn.style.display = "flex";
+            });
+          }
+        } catch (e) {
+          var btn = document.getElementById("audio-fallback");
+          if (btn) btn.style.display = "flex";
+        }
+      }
+      function retryAudio() {
+        var audio = document.getElementById("myAudio");
+        if (!audio) return;
+        audio.muted = false;
+        audio.volume = 1;
         var p = audio.play();
-        if (p && typeof p.catch === 'function') { p.catch(function(){}); }
+        if (p && typeof p.then === 'function') {
+          p.then(function () {
+            var btn = document.getElementById("audio-fallback");
+            if (btn) btn.style.display = "none";
+          }).catch(function () {});
+        }
       }
     </script>
   </head>
@@ -44,6 +71,10 @@
       <p>Toca para comenzar</p>
     </div>
 
+    <button id="audio-fallback" type="button" onclick="retryAudio()">
+      🔊 Activar música
+    </button>
+
     <div id="main">
       <div id="error">
         <a
@@ -52,9 +83,8 @@
         >
         (<a href="http://firefox.com.cn/download/">Firefox</a>)
       </div>
-      <audio loop="loop" height="100" width="100" id="myAudio">
-        <source src="aud.mp3" type="audio/mp3" />
-        <embed height="100" width="100" src="aud.mp3" />
+      <audio id="myAudio" loop="loop" preload="auto" playsinline webkit-playsinline>
+        <source src="aud.mp3" type="audio/mpeg" />
       </audio>
       <div id="scaler">
       <div id="wrap">

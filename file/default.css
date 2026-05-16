@@ -299,6 +299,7 @@ a {
   transform: translateX(-50%) translateY(40px);
   z-index: 15;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 1s ease, transform 1s ease;
   cursor: pointer;
   user-select: none;
@@ -307,6 +308,7 @@ a {
 }
 #cake.show {
   opacity: 1;
+  pointer-events: auto;
   transform: translateX(-50%) translateY(0);
 }
 .cake-top {

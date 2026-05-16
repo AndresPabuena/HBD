@@ -338,6 +338,11 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255, 200, 0, 0.5));
+}
+.digit-candle .digit {
+  position: relative;
+  z-index: 1;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 84px;
   font-weight: 900;
@@ -346,12 +351,7 @@ a {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: transparent;
-  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4)) drop-shadow(0 0 8px rgba(255, 200, 0, 0.4));
-}
-.digit-candle .digit {
-  position: relative;
-  z-index: 1;
+  color: #f5a623; /* fallback for browsers that don't support background-clip:text */
 }
 .digit-candle .flame {
   position: absolute;

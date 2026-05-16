@@ -523,29 +523,39 @@
         })();
 
         // ====================================================
-        // EASTER EGG — Triple-tap the splash heart for "Queen Mode"
-        // Adds a 👑 to the splash + a bonus secret message at the end.
+        // EASTER EGG — Triple-tap mom's photo for "Queen Mode"
+        // Hidden surprise: coronates mom as queen + bonus message at the end.
+        // (Moved from the splash heart so the main flow tap isn't blocked.)
         // ====================================================
         (function () {
-          var heart = document.querySelector("#splash .splash-heart");
-          if (!heart) return;
+          var photo = document.getElementById("mom-photo");
+          if (!photo) return;
           var tapCount = 0;
           var resetTimer = null;
           function onTap(e) {
-            // Don't let the splash click also count (we want only heart taps)
-            e.stopPropagation();
+            // Only count taps once the photo is actually visible.
+            if (!photo.classList.contains("show")) return;
             tapCount++;
             if (resetTimer) clearTimeout(resetTimer);
             resetTimer = setTimeout(function () { tapCount = 0; }, 1500);
             if (tapCount >= 3) {
               tapCount = 0;
               window.queenMode = true;
-              document.getElementById("splash").classList.add("queen");
+              photo.classList.add("queen");
               buzz([40, 60, 40, 60, 120]);
+              if (window.burstConfetti) window.burstConfetti();
             }
           }
-          heart.addEventListener("click", onTap);
-          heart.addEventListener("touchstart", onTap);
+          // Photo has pointer-events: none in CSS — temporarily enable when shown
+          // so we can catch taps. We do it via JS to keep the original layout clean.
+          var observer = new MutationObserver(function () {
+            if (photo.classList.contains("show")) {
+              photo.style.pointerEvents = "auto";
+            }
+          });
+          observer.observe(photo, { attributes: true, attributeFilter: ["class"] });
+          photo.addEventListener("click", onTap);
+          photo.addEventListener("touchstart", onTap);
         })();
       })();
     </script>

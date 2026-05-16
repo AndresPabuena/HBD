@@ -1,8 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html xml:lang="es" xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>HBD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#000000" />
+    <title>Feliz Cumpleaños Mamá</title>
     <link type="text/css" rel="stylesheet" href="./file/default.css" />
     <script type="text/javascript" src="./file/jquery.min.js"></script>
     <script type="text/javascript" src="./file/jscex.min.js"></script>
@@ -30,11 +32,18 @@
     <script>
       function playAudio() {
         var audio = document.getElementById("myAudio");
-        audio.play();
+        var p = audio.play();
+        if (p && typeof p.catch === 'function') { p.catch(function(){}); }
       }
     </script>
   </head>
   <body>
+    <div id="splash">
+      <div class="splash-heart">💖</div>
+      <h1>Para ti, Mamá</h1>
+      <p>Toca para comenzar</p>
+    </div>
+
     <div id="main">
       <div id="error">
         <a
@@ -43,33 +52,90 @@
         >
         (<a href="http://firefox.com.cn/download/">Firefox</a>)
       </div>
-      <audio autoplay="autoplay" height="100" width="100" id="myAudio">
+      <audio loop="loop" height="100" width="100" id="myAudio">
         <source src="aud.mp3" type="audio/mp3" />
         <embed height="100" width="100" src="aud.mp3" />
       </audio>
+      <div id="scaler">
       <div id="wrap">
         <div id="text">
           <div id="code">
-            <span class="say">Wishing you a beautiful day 💫</span><br />
-            <span class="say">Happy Birthday 🎉</span><br />
-            <span class="say">May you be blessed with joy and peace 🌟</span
-            ><br />
-            <span class="say"
-              >And may your heart be filled with happiness 💕</span
-            ><br />
-            <span class="say">You are truly appreciated ❤️</span><br />
-            <span class="say">Wishing you love and smiles always 🥰</span><br />
-            <span class="say">Hope your day is as amazing as you are 🎂✨</span
-            ><br />
+            <span class="say">¡Feliz Cumpleaños, Mamá! 🎉</span><br />
+            <span class="say">Hoy es tu día y mereces todo lo mejor 💫</span><br />
+            <span class="say">Gracias por tu amor incondicional 💕</span><br />
+            <span class="say">Eres la mujer más fuerte y hermosa que conozco 🌟</span><br />
+            <span class="say">Que la vida te llene de alegría y salud 🌸</span><br />
+            <span class="say">Eres mi ejemplo, mi refugio y mi inspiración ❤️</span><br />
+            <span class="say">Te amo con todo mi corazón 🥰</span><br />
+            <span class="say">¡Que cumplas muchos más, mamita! 🎂✨</span><br />
           </div>
         </div>
         <div id="clock-box">
-          <span id="clock">577 days 0 hours 0 minutes 0 seconds</span>
-          <!-- Change to "6940 days..." if needed -->
+          <span id="clock">Para la mejor mamá del mundo 💖</span>
         </div>
         <canvas id="canvas" width="1100" height="680"></canvas>
       </div>
+
+      <canvas id="fireworks" width="1100" height="680"></canvas>
+
+      <div id="mom-photo">
+        <div class="frame">
+          <img src="mama.jpeg" alt="Mamá"
+               onerror="this.parentElement.parentElement.style.display='none'" />
+        </div>
+        <div class="hearts">
+          <span>💖</span><span>💕</span><span>💗</span><span>💝</span>
+        </div>
+      </div>
+
+      <div id="cake">
+        <div class="cake-top">
+          <div class="candle" data-on="1"><div class="flame"></div></div>
+          <div class="candle" data-on="1"><div class="flame"></div></div>
+          <div class="candle" data-on="1"><div class="flame"></div></div>
+          <div class="candle" data-on="1"><div class="flame"></div></div>
+          <div class="candle" data-on="1"><div class="flame"></div></div>
+        </div>
+        <div class="cake-layer top"></div>
+        <div class="cake-layer mid"></div>
+        <div class="cake-layer bottom"></div>
+        <p class="cake-hint">¡Sopla las velas! 🎂</p>
+      </div>
+
+      <div id="wish">
+        <h2>¡Pide un deseo, mamita!</h2>
+        <p>Te amo con todo mi corazón 💖</p>
+      </div>
+      </div>
     </div>
+
+    <script>
+      (function () {
+        var DESIGN_W = 1100, DESIGN_H = 680;
+        function fit() {
+          var scaler = document.getElementById('scaler');
+          if (!scaler) return;
+          var vw = window.innerWidth;
+          var vh = window.innerHeight;
+          var scale = Math.min(vw / DESIGN_W, vh / DESIGN_H);
+          if (scale >= 1) {
+            scaler.style.transform = '';
+            scaler.style.position = '';
+            scaler.style.left = '';
+            scaler.style.top = '';
+          } else {
+            scaler.style.transform = 'scale(' + scale + ')';
+            scaler.style.transformOrigin = 'top left';
+            scaler.style.position = 'absolute';
+            scaler.style.left = ((vw - DESIGN_W * scale) / 2) + 'px';
+            scaler.style.top = ((vh - DESIGN_H * scale) / 2) + 'px';
+          }
+        }
+        fit();
+        window.addEventListener('resize', fit);
+        window.addEventListener('orientationchange', fit);
+      })();
+    </script>
 
     <script>
       (function () {
@@ -170,29 +236,47 @@
         var foot = tree.footer;
         var hold = 1;
 
-        canvas
-          .click(function (e) {
-            playAudio();
-            var offset = canvas.offset(),
-              x,
-              y;
-            x = e.pageX - offset.left;
-            y = e.pageY - offset.top;
-            if (seed.hover(x, y)) {
-              hold = 0;
-              canvas.unbind("click");
-              canvas.unbind("mousemove");
-              canvas.removeClass("hand");
-            }
-          })
-          .mousemove(function (e) {
-            var offset = canvas.offset(),
-              x,
-              y;
-            x = e.pageX - offset.left;
-            y = e.pageY - offset.top;
-            canvas.toggleClass("hand", seed.hover(x, y));
-          });
+        function canvasTap(e) {
+          playAudio();
+          var offset = canvas.offset(), x, y;
+          // Support both mouse and touch events
+          var pageX, pageY;
+          if (e.touches && e.touches.length) {
+            pageX = e.touches[0].pageX;
+            pageY = e.touches[0].pageY;
+          } else if (e.changedTouches && e.changedTouches.length) {
+            pageX = e.changedTouches[0].pageX;
+            pageY = e.changedTouches[0].pageY;
+          } else {
+            pageX = e.pageX;
+            pageY = e.pageY;
+          }
+          // The scaler may visually scale the canvas via CSS transform — convert
+          // page coords back into the canvas' internal coordinate system.
+          var rect = canvas[0].getBoundingClientRect();
+          var scaleX = canvas[0].width / rect.width;
+          var scaleY = canvas[0].height / rect.height;
+          x = (pageX - (rect.left + window.scrollX)) * scaleX;
+          y = (pageY - (rect.top + window.scrollY)) * scaleY;
+          if (seed.hover(x, y)) {
+            hold = 0;
+            canvas.off("click touchstart");
+            canvas.off("mousemove");
+            canvas.removeClass("hand");
+          }
+        }
+        canvas.on("click touchstart", function (e) {
+          if (e.type === "touchstart") e.preventDefault();
+          canvasTap(e.originalEvent || e);
+        });
+        canvas.on("mousemove", function (e) {
+          var rect = canvas[0].getBoundingClientRect();
+          var scaleX = canvas[0].width / rect.width;
+          var scaleY = canvas[0].height / rect.height;
+          var x = (e.pageX - (rect.left + window.scrollX)) * scaleX;
+          var y = (e.pageY - (rect.top + window.scrollY)) * scaleY;
+          canvas.toggleClass("hand", seed.hover(x, y));
+        });
 
         var seedAnimate = eval(
           Jscex.compile("async", function () {
@@ -255,6 +339,30 @@
           })
         );
 
+        var finaleAnimate = eval(
+          Jscex.compile("async", function () {
+            // Wait for the typewriter to roughly finish
+            // (~300 visible chars including emoji surrogates at ~75ms/char)
+            $await(Jscex.Async.sleep(25000));
+
+            // Fireworks burst
+            if (window.playFireworks) { window.playFireworks(8000); }
+            $await(Jscex.Async.sleep(1500));
+
+            // Fade out the tree + messages so only the page background,
+            // the photo and the fireworks remain visible.
+            $("#wrap").addClass("fade-tree");
+            $await(Jscex.Async.sleep(1300));
+
+            // Reveal mom's photo (gracefully hidden if mama.jpg is missing)
+            $("#mom-photo").addClass("show");
+            $await(Jscex.Async.sleep(3500));
+
+            // Reveal the interactive cake
+            $("#cake").addClass("show");
+          })
+        );
+
         var runAsync = eval(
           Jscex.compile("async", function () {
             $await(seedAnimate());
@@ -262,10 +370,64 @@
             $await(flowAnimate());
             $await(moveAnimate());
             textAnimate().start();
+            $await(finaleAnimate());
           })
         );
 
-        runAsync().start();
+        // Gate the entire animation behind the splash tap (also unlocks audio on mobile).
+        // On mobile we also auto-trigger the seed so the tree starts growing immediately
+        // without requiring a second tap on the heart. On desktop the seed still waits
+        // for the user to click it, preserving the original behavior.
+        var isMobile =
+          /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone/i.test(
+            navigator.userAgent
+          ) ||
+          (('ontouchstart' in window || navigator.maxTouchPoints > 0) &&
+            window.innerWidth < 1120);
+        var started = false;
+        function startExperience() {
+          if (started) return;
+          started = true;
+          var splash = document.getElementById("splash");
+          if (splash) {
+            splash.classList.add("fade-out");
+            setTimeout(function () { splash.style.display = "none"; }, 900);
+          }
+          playAudio();
+          if (isMobile) {
+            hold = 0;
+            canvas.off("click touchstart");
+            canvas.off("mousemove");
+            canvas.removeClass("hand");
+          }
+          runAsync().start();
+        }
+        var splashEl = document.getElementById("splash");
+        if (splashEl) {
+          splashEl.addEventListener("click", startExperience);
+          splashEl.addEventListener("touchstart", startExperience);
+        } else {
+          startExperience();
+        }
+
+        // Cake interaction: each tap blows out the next lit candle.
+        // When all are out, reveal the final wish + a confetti burst.
+        (function () {
+          var $cake = $("#cake");
+          $cake.on("click touchstart", function (e) {
+            e.preventDefault();
+            var $next = $cake.find('.candle[data-on="1"]').first();
+            if ($next.length === 0) return;
+            $next.attr("data-on", "0");
+            if ($cake.find('.candle[data-on="1"]').length === 0) {
+              $cake.addClass("all-out");
+              setTimeout(function () {
+                $("#wish").addClass("show");
+                if (window.playFireworks) { window.playFireworks(7000); }
+              }, 600);
+            }
+          });
+        })();
       })();
     </script>
   </body>

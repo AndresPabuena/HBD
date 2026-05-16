@@ -1,20 +1,32 @@
-body {
+html, body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  min-height: 100vh;
   background-image: url('../img2.png');
   background-size: cover;
   background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
   font-size: 14px;
   font-family: sans-serif;
   color: white;
-  overflow: auto;
+  overflow-x: hidden;
+}
+#main {
+  width: 100%;
+  overflow: hidden;
+}
+#scaler {
+  position: relative;
+  width: 1100px;
+  height: 680px;
+  margin: 0 auto;
+  transform-origin: top center;
 }
 a {
   color: white;
   font-size: 14px;
-}
-#main {
-  width: 100%;
 }
 #wrap {
   position: relative;
@@ -22,6 +34,26 @@ a {
   width: 1100px;
   height: 680px;
   margin-top: 10px;
+  transition: opacity 1.5s ease;
+}
+#wrap.fade-tree {
+  opacity: 0;
+  pointer-events: none;
+}
+@media (max-width: 1120px) {
+  body {
+    overflow: hidden;
+  }
+  #main {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #wrap {
+    margin-top: 0;
+  }
 }
 #text {
   width: 272px;
@@ -83,4 +115,285 @@ a {
   font-size: 25px;
   font-family: monospace;
 
+}
+
+/* =========================================================
+   SPLASH "Toca para comenzar"
+   ========================================================= */
+#splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, #2a0a1a 0%, #0a0006 80%);
+  color: #ffd1dc;
+  text-align: center;
+  cursor: pointer;
+  transition: opacity 0.8s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#splash.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+.splash-heart {
+  font-size: 120px;
+  animation: heartbeat 1.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(255, 100, 150, 0.7));
+  margin-bottom: 20px;
+}
+#splash h1 {
+  font-size: 42px;
+  margin: 10px 0;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(255, 100, 150, 0.5);
+}
+#splash p {
+  font-size: 20px;
+  margin-top: 30px;
+  opacity: 0.85;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.15); }
+  50% { transform: scale(0.95); }
+  75% { transform: scale(1.1); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* =========================================================
+   FIREWORKS canvas overlay
+   ========================================================= */
+#fireworks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1100px;
+  height: 680px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* =========================================================
+   PHOTO with heart frame
+   ========================================================= */
+#mom-photo {
+  position: absolute;
+  left: 50%;
+  top: 28%;
+  transform: translate(-50%, -50%) scale(0.85);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 1.2s ease, transform 1.2s ease;
+  pointer-events: none;
+  text-align: center;
+}
+#mom-photo.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+#mom-photo .frame {
+  display: inline-block;
+  padding: 12px;
+  background: linear-gradient(135deg, #ff8fa3, #ffd1dc, #ff8fa3);
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(255, 143, 163, 0.6), 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+#mom-photo .frame img {
+  display: block;
+  max-width: 240px;
+  max-height: 300px;
+  border-radius: 8px;
+  border: 4px solid #fff;
+}
+#mom-photo .hearts {
+  position: absolute;
+  inset: -30px;
+  pointer-events: none;
+}
+#mom-photo .hearts span {
+  position: absolute;
+  font-size: 28px;
+  animation: floatHeart 3s ease-in-out infinite;
+}
+#mom-photo .hearts span:nth-child(1) { top: 0; left: 10%; animation-delay: 0s; }
+#mom-photo .hearts span:nth-child(2) { top: 20%; right: 0; animation-delay: 0.7s; }
+#mom-photo .hearts span:nth-child(3) { bottom: 10%; left: 0; animation-delay: 1.4s; }
+#mom-photo .hearts span:nth-child(4) { bottom: 0; right: 15%; animation-delay: 2.1s; }
+@keyframes floatHeart {
+  0%, 100% { transform: translateY(0) rotate(-10deg); opacity: 0.8; }
+  50% { transform: translateY(-15px) rotate(10deg); opacity: 1; }
+}
+
+/* =========================================================
+   BIRTHDAY CAKE with candles
+   ========================================================= */
+#cake {
+  position: absolute;
+  left: 50%;
+  bottom: 60px;
+  transform: translateX(-50%) translateY(40px);
+  z-index: 15;
+  opacity: 0;
+  transition: opacity 1s ease, transform 1s ease;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
+}
+#cake.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.cake-top {
+  position: relative;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 18px;
+  margin-bottom: -4px;
+}
+.candle {
+  position: relative;
+  width: 10px;
+  height: 38px;
+  background: linear-gradient(180deg, #ffe66d 0%, #f5a623 50%, #ffe66d 100%);
+  border-radius: 2px;
+  box-shadow: inset -2px 0 0 rgba(0,0,0,0.15);
+}
+.candle .flame {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  width: 10px;
+  height: 18px;
+  background: radial-gradient(ellipse at center bottom, #fff7ad 0%, #ffae00 50%, #ff5500 90%, transparent 100%);
+  border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+  transform: translateX(-50%);
+  animation: flicker 0.15s infinite alternate;
+  box-shadow: 0 0 12px rgba(255, 174, 0, 0.9), 0 0 24px rgba(255, 100, 0, 0.5);
+  transform-origin: center bottom;
+}
+.candle[data-on="0"] .flame {
+  opacity: 0;
+  transform: translateX(-50%) scale(0.3);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  animation: none;
+  box-shadow: none;
+}
+.candle[data-on="0"]::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle, rgba(200,200,200,0.7) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  animation: smoke 1.5s ease-out forwards;
+}
+@keyframes flicker {
+  0% { transform: translateX(-50%) scale(1, 1); }
+  100% { transform: translateX(-50%) scale(1.05, 0.95); }
+}
+@keyframes smoke {
+  0% { opacity: 0.9; transform: translate(-50%, 0) scale(0.5); }
+  100% { opacity: 0; transform: translate(-50%, -40px) scale(1.8); }
+}
+.cake-layer {
+  margin: 0 auto;
+  border-radius: 6px;
+  box-shadow: inset 0 -6px 0 rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.3);
+}
+.cake-layer.top {
+  width: 180px;
+  height: 50px;
+  background: linear-gradient(180deg, #fff0f5 0%, #ffb3c1 50%, #ff8fa3 100%);
+  position: relative;
+}
+.cake-layer.top::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background: repeating-linear-gradient(90deg, #ff4d6d 0px, #ff4d6d 18px, #ff8fa3 18px, #ff8fa3 36px);
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+}
+.cake-layer.mid {
+  width: 230px;
+  height: 55px;
+  background: linear-gradient(180deg, #ffd1dc 0%, #ff8fa3 100%);
+  margin-top: 2px;
+}
+.cake-layer.bottom {
+  width: 280px;
+  height: 60px;
+  background: linear-gradient(180deg, #ffb3c1 0%, #ff6b8b 100%);
+  margin-top: 2px;
+}
+.cake-hint {
+  margin-top: 14px;
+  font-size: 18px;
+  color: #ffe;
+  text-shadow: 0 0 10px rgba(255, 100, 150, 0.8), 0 2px 4px rgba(0,0,0,0.5);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+#cake.all-out .cake-hint {
+  display: none;
+}
+
+/* =========================================================
+   FINAL WISH message
+   ========================================================= */
+#wish {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 1.5s ease, transform 1.5s ease;
+  text-align: center;
+  pointer-events: none;
+  width: 90%;
+}
+#wish.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+#wish h2 {
+  font-size: 48px;
+  margin: 0 0 16px 0;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 100, 150, 0.9), 0 0 40px rgba(255, 100, 150, 0.6);
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+#wish p {
+  font-size: 24px;
+  color: #ffd1dc;
+  text-shadow: 0 0 15px rgba(255, 100, 150, 0.7);
+  margin: 0;
+}
+
+/* =========================================================
+   Mobile tweaks
+   ========================================================= */
+@media (max-width: 1120px) {
+  #splash h1 { font-size: 32px; }
+  #splash p { font-size: 16px; }
+  .splash-heart { font-size: 90px; }
 }

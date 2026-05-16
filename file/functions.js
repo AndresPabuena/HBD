@@ -31,6 +31,59 @@ var clientHeight = $win.height();
 })(jQuery);
 
 // ============================================================
+// Shared Web Audio context for sound effects (init on user gesture)
+// ============================================================
+window.__sfxCtx = null;
+window.initSfx = function(){
+	if (window.__sfxCtx) return;
+	try {
+		var AC = window.AudioContext || window.webkitAudioContext;
+		if (AC) window.__sfxCtx = new AC();
+	} catch(e){}
+};
+window.playExplosionSfx = function(){
+	var ctx = window.__sfxCtx;
+	if (!ctx) return;
+	try {
+		if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
+		// Short noise burst with low-pass filter for a "boom" feel.
+		var duration = 0.35;
+		var bufferSize = Math.floor(ctx.sampleRate * duration);
+		var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+		var data = buffer.getChannelData(0);
+		for (var i = 0; i < bufferSize; i++){
+			var decay = Math.pow(1 - i / bufferSize, 2.5);
+			data[i] = (Math.random() * 2 - 1) * decay;
+		}
+		var src = ctx.createBufferSource();
+		src.buffer = buffer;
+		var filter = ctx.createBiquadFilter();
+		filter.type = 'lowpass';
+		filter.frequency.value = 600 + Math.random() * 800;
+		var gain = ctx.createGain();
+		gain.gain.value = 0.18;
+		src.connect(filter);
+		filter.connect(gain);
+		gain.connect(ctx.destination);
+		src.start();
+		// Whistle "ascending" tone before the boom for extra flavor (50% chance)
+		if (Math.random() < 0.5) {
+			var osc = ctx.createOscillator();
+			var oscGain = ctx.createGain();
+			osc.type = 'sine';
+			osc.frequency.setValueAtTime(900, ctx.currentTime);
+			osc.frequency.exponentialRampToValueAtTime(1600, ctx.currentTime + 0.08);
+			oscGain.gain.setValueAtTime(0.06, ctx.currentTime);
+			oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+			osc.connect(oscGain);
+			oscGain.connect(ctx.destination);
+			osc.start();
+			osc.stop(ctx.currentTime + 0.12);
+		}
+	} catch(e){}
+};
+
+// ============================================================
 // Fireworks / confetti particle system
 // ============================================================
 (function(window){
@@ -84,6 +137,7 @@ var clientHeight = $win.height();
 				multiColor ? pick(COLORS) : baseColor
 			));
 		}
+		if (window.playExplosionSfx) window.playExplosionSfx();
 	};
 
 	function Particle(x, y, vx, vy, color){
@@ -165,6 +219,59 @@ var clientHeight = $win.height();
 			fwRockets.push(r);
 		}
 		if (!fwRAF) tick();
+	};
+})(window);
+
+// ============================================================
+// Falling petals (DOM-based, called during/after the tree bloom)
+// ============================================================
+(function(window){
+	var PETAL_COLORS = ['#ffb3c1','#ff8fa3','#ffd1dc','#ff6b8b','#ffe0eb'];
+	var petalTimer = null;
+	function rand(a, b){ return a + Math.random() * (b - a); }
+
+	function spawnPetal(scaler){
+		var p = document.createElement('div');
+		p.className = 'petal';
+		// Spawn over the canvas area (1100 wide), favoring the tree's bloom region.
+		var x = rand(80, 1020);
+		var size = rand(8, 16);
+		var duration = rand(5, 9);
+		var sway = rand(40, 120) * (Math.random() < 0.5 ? -1 : 1);
+		var rot = rand(-360, 360);
+		p.style.left = x + 'px';
+		p.style.top = '-20px';
+		p.style.width = size + 'px';
+		p.style.height = size + 'px';
+		p.style.background = PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)];
+		p.style.animationDuration = duration + 's';
+		p.style.setProperty('--sway', sway + 'px');
+		p.style.setProperty('--rot', rot + 'deg');
+		scaler.appendChild(p);
+		setTimeout(function(){
+			if (p.parentNode) p.parentNode.removeChild(p);
+		}, duration * 1000 + 200);
+	}
+
+	window.startPetals = function(durationMs){
+		var scaler = document.getElementById('scaler');
+		if (!scaler) return;
+		if (petalTimer) clearInterval(petalTimer);
+		var endsAt = Date.now() + (durationMs || 15000);
+		petalTimer = setInterval(function(){
+			if (Date.now() > endsAt) {
+				clearInterval(petalTimer);
+				petalTimer = null;
+				return;
+			}
+			// Spawn 1-3 petals per tick
+			var n = 1 + Math.floor(Math.random() * 3);
+			for (var i = 0; i < n; i++) spawnPetal(scaler);
+		}, 220);
+	};
+
+	window.stopPetals = function(){
+		if (petalTimer) { clearInterval(petalTimer); petalTimer = null; }
 	};
 })(window);
 

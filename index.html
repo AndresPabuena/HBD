@@ -120,11 +120,7 @@
 
       <div id="cake">
         <div class="cake-top">
-          <div class="candle" data-on="1"><div class="flame"></div></div>
-          <div class="candle" data-on="1"><div class="flame"></div></div>
-          <div class="candle" data-on="1"><div class="flame"></div></div>
-          <div class="candle" data-on="1"><div class="flame"></div></div>
-          <div class="candle" data-on="1"><div class="flame"></div></div>
+          <!-- Candles are injected dynamically based on MAMA_AGE (see script below) -->
         </div>
         <div class="cake-layer top"></div>
         <div class="cake-layer mid"></div>
@@ -135,6 +131,7 @@
       <div id="wish">
         <h2>¡Pide un deseo, mamita!</h2>
         <p>Te amo con todo mi corazón 💖</p>
+        <p id="wish-bonus">👑 Eres la reina de mi vida 👑</p>
       </div>
       </div>
     </div>
@@ -369,15 +366,54 @@
           })
         );
 
+        // ====================================================
+        // CONFIGURACIÓN — cámbiala libremente
+        // ====================================================
+        // Edad de mamá (cantidad de velas en el pastel)
+        var MAMA_AGE = 50;
+
+        // Generate cake candles dynamically
+        (function () {
+          var $top = $("#cake .cake-top");
+          $top.empty();
+          for (var i = 0; i < MAMA_AGE; i++) {
+            $top.append('<div class="candle" data-on="1"><div class="flame"></div></div>');
+          }
+          $("#cake").attr("data-count", MAMA_AGE);
+        })();
+
+        // Small haptic helper — no-op on devices without vibration support (iOS)
+        function buzz(pattern) {
+          if (navigator.vibrate) {
+            try { navigator.vibrate(pattern); } catch(e){}
+          }
+        }
+
+        var flowAnimateWithPetals = eval(
+          Jscex.compile("async", function () {
+            // Start petals raining a bit after the bloom begins.
+            setTimeout(function () {
+              if (window.startPetals) window.startPetals(18000);
+            }, 800);
+            do {
+              tree.flower(2);
+              $await(Jscex.Async.sleep(10));
+            } while (tree.canFlower());
+          })
+        );
+
         var finaleAnimate = eval(
           Jscex.compile("async", function () {
             // Wait for the typewriter to roughly finish
             // (~300 visible chars including emoji surrogates at ~75ms/char)
             $await(Jscex.Async.sleep(25000));
 
-            // Fireworks burst
+            // Fireworks burst (with explosion sound)
             if (window.playFireworks) { window.playFireworks(8000); }
             $await(Jscex.Async.sleep(1500));
+
+            // Stop any remaining petals before the tree fades out
+            if (window.stopPetals) window.stopPetals();
 
             // Fade out the tree + messages so only the page background,
             // the photo and the fireworks remain visible.
@@ -386,10 +422,12 @@
 
             // Reveal mom's photo (gracefully hidden if mama.jpg is missing)
             $("#mom-photo").addClass("show");
+            buzz(60); // gentle buzz when mom's photo appears
             $await(Jscex.Async.sleep(3500));
 
             // Reveal the interactive cake
             $("#cake").addClass("show");
+            buzz(40);
           })
         );
 
@@ -397,7 +435,7 @@
           Jscex.compile("async", function () {
             $await(seedAnimate());
             $await(growAnimate());
-            $await(flowAnimate());
+            $await(flowAnimateWithPetals());
             $await(moveAnimate());
             textAnimate().start();
             $await(finaleAnimate());
@@ -424,6 +462,8 @@
             setTimeout(function () { splash.style.display = "none"; }, 900);
           }
           playAudio();
+          // Initialize Web Audio context for SFX (needs a user gesture).
+          if (window.initSfx) window.initSfx();
           if (isMobile) {
             hold = 0;
             canvas.off("click touchstart");
@@ -440,23 +480,58 @@
           startExperience();
         }
 
-        // Cake interaction: each tap blows out the next lit candle.
-        // When all are out, reveal the final wish + a confetti burst.
+        // Cake interaction: each tap blows out the next batch of lit candles.
+        // For many candles (high age), we extinguish several per tap so it
+        // doesn't take forever. When all are out → reveal wish + extra finale.
         (function () {
           var $cake = $("#cake");
+          // Aim for ~5 taps to finish, regardless of age
+          var perTap = Math.max(1, Math.ceil(MAMA_AGE / 5));
           $cake.on("click touchstart", function (e) {
             e.preventDefault();
-            var $next = $cake.find('.candle[data-on="1"]').first();
-            if ($next.length === 0) return;
-            $next.attr("data-on", "0");
+            var $lit = $cake.find('.candle[data-on="1"]');
+            if ($lit.length === 0) return;
+            $lit.slice(0, perTap).attr("data-on", "0");
+            buzz(35);
             if ($cake.find('.candle[data-on="1"]').length === 0) {
               $cake.addClass("all-out");
+              buzz([100, 60, 100, 60, 180]); // celebratory pattern
               setTimeout(function () {
                 $("#wish").addClass("show");
+                if (window.queenMode) {
+                  $("#wish").addClass("queen");
+                  $("#wish-bonus").addClass("show");
+                }
                 if (window.playFireworks) { window.playFireworks(7000); }
               }, 600);
             }
           });
+        })();
+
+        // ====================================================
+        // EASTER EGG — Triple-tap the splash heart for "Queen Mode"
+        // Adds a 👑 to the splash + a bonus secret message at the end.
+        // ====================================================
+        (function () {
+          var heart = document.querySelector("#splash .splash-heart");
+          if (!heart) return;
+          var tapCount = 0;
+          var resetTimer = null;
+          function onTap(e) {
+            // Don't let the splash click also count (we want only heart taps)
+            e.stopPropagation();
+            tapCount++;
+            if (resetTimer) clearTimeout(resetTimer);
+            resetTimer = setTimeout(function () { tapCount = 0; }, 1500);
+            if (tapCount >= 3) {
+              tapCount = 0;
+              window.queenMode = true;
+              document.getElementById("splash").classList.add("queen");
+              buzz([40, 60, 40, 60, 120]);
+            }
+          }
+          heart.addEventListener("click", onTap);
+          heart.addEventListener("touchstart", onTap);
         })();
       })();
     </script>
